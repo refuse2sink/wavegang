@@ -188,8 +188,10 @@
             playPauseBtn.textContent = 'Pause';
             isPlaying = true;
             startBarAnimation();
-            lyrics.style.visibility = 'visible';
-            startTypingAnimation();
+            setTimeout(() => {
+                lyrics.style.visibility = 'visible';
+                startTypingAnimation();
+            }, audioPlayer.duration * 0.25 * 1000); // Delay lyrics start after 1/4 of the audio
         } else {
             audioPlayer.pause();
             playPauseBtn.textContent = 'Play';
@@ -216,7 +218,7 @@
             if (currentIndex < lyricsText.length) {
                 lyrics.innerHTML += lyricsText.charAt(currentIndex);  // Add one character at a time
                 currentIndex++;
-                const typingSpeed = totalDuration / lyricsText.length;  // Spread typing across song duration
+                const typingSpeed = (totalDuration - (totalDuration * 0.25)) / lyricsText.length;  // Adjust typing duration
                 lyricsTimer = setTimeout(type, typingSpeed);  // Call type recursively
             }
         }
