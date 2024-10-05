@@ -104,6 +104,7 @@
             border-right: 2px solid;
             overflow: hidden; /* Hide the overflow until text is "typed" */
             visibility: hidden; /* Start hidden */
+            padding: 10px;
         }
 
         /* Typing effect keyframes */
@@ -146,32 +147,16 @@
 
 <!-- Song Lyrics -->
 <div class="lyrics" id="lyrics">
-    It feels so far<br>
-    I can't have it<br>
-    Reach up to the stars it got me feeling I could grab it<br>
-    I feel so wrong,<br>
-    I'm right passed it<br>
-    Put all of my feelings in a blunt then I ashed it<br>
-    You know I can stand this<br>
-    I'm losing my balance<br>
-    Running from myself is only giving me a callus<br>
-    Sticking to myself and I ain't worrying about it<br>
-    You ain't sticking to the code<br>
-    You put it in it's invalid.<br>
-    Crawling through the basement to make it to the attic<br>
-    I ain't worried bout the time I'm still gon shine without a Patek<br>
-    I just put my WTAPS on I'm moving tactic<br>
-    They can push me to the side, I know I'm still your main attraction<br>
-    All the way down to the atoms I know it don't really matter<br>
-    I'm just tryna stay afloat without a paddle<br>
-    I been so damn high I can't come down without a ladder<br>
-    They gon keep on talking<br>
-    I lose signal through the chatter<br>
-    My mind keep on racing like a horse so where the lasso<br>
-    This place is filled with animals it feel like Camp Lazlo<br>
-    I thought you were my Cassie got me feeling like a asshole<br>
-    Now I swim in my emotion<br>
-    In my feelings doin back strokes
+    <p>It feels so far I can't have it Reach up to the stars it got me feeling I could grab it</p>
+    <p>I feel so wrong, I'm right passed it Put all of my feelings in a blunt then I ashed it</p>
+    <p>You know I can stand this I'm losing my balance Running from myself is only giving me a callus</p>
+    <p>Sticking to myself and I ain't worrying about it You ain't sticking to the code You put it in it's invalid.</p>
+    <p>Crawling through the basement to make it to the attic I ain't worried bout the time I'm still gon shine without a Patek</p>
+    <p>I just put my WTAPS on I'm moving tactic They can push me to the side, I know I'm still your main attraction</p>
+    <p>All the way down to the atoms I know it don't really matter I'm just tryna stay afloat without a paddle</p>
+    <p>I been so damn high I can't come down without a ladder They gon keep on talking I lose signal through the chatter</p>
+    <p>My mind keep on racing like a horse so where the lasso This place is filled with animals it feel like Camp Lazlo</p>
+    <p>I thought you were my Cassie got me feeling like a asshole Now I swim in my emotion In my feelings doin back strokes</p>
 </div>
 
 <script>
@@ -223,7 +208,7 @@
     // Function to display lyrics with typing animation
     function startTypingAnimation() {
         const totalDuration = audioPlayer.duration * 1000; // Total duration of audio in ms
-        const lyricsText = lyrics.innerHTML;  // Grab the full lyrics text
+        const lyricsText = lyrics.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, ' ');  // Remove paragraph tags for cleaner typing
         lyrics.innerHTML = '';  // Clear the lyrics container
         let currentIndex = 0;
 
