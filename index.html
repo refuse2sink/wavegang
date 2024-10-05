@@ -13,9 +13,20 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            flex-direction: column;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Dark mode */
+        body.dark-mode {
             background-color: #000; /* Black background */
             color: #fff; /* White text */
-            flex-direction: column;
+        }
+
+        /* Light mode */
+        body.light-mode {
+            background-color: #fff; /* White background */
+            color: #000; /* Black text */
         }
 
         .wave-container {
@@ -44,7 +55,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background-color: #333; /* Dark background */
+            background-color: #333; /* Dark background for player */
             padding: 10px;
             border-radius: 10px;
         }
@@ -69,8 +80,18 @@
         #play-pause {
             background: none;
             border: none;
-            color: white;
             cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        /* Play button in dark mode */
+        body.dark-mode #play-pause {
+            color: white;
+        }
+
+        /* Play button in light mode */
+        body.light-mode #play-pause {
+            color: black;
         }
 
         /* Bars animation */
@@ -107,24 +128,15 @@
             padding: 10px;
         }
 
-        /* Typing effect keyframes */
         @keyframes typing {
             from { width: 0; }
             to { width: 100%; }
-        }
-
-        @keyframes blink-caret {
-            from, to { border-color: transparent; }
-            50% { border-color: white; }
         }
     </style>
 </head>
 <body>
 
 <div class="wave-container">
-    <br>
-    <br>
-    <br>
     <div class="wave">(      )</div>
     <div class="wave">(            )</div>
     <h1>Wave Gang</h1>
@@ -194,7 +206,7 @@
             setTimeout(() => {
                 lyrics.style.visibility = 'visible';
                 startTypingAnimation();
-            }, audioPlayer.duration * 0.18 * 1000); // Delay lyrics start after 1/4 of the audio
+            }, audioPlayer.duration * 0.25 * 1000); // Delay lyrics start after 1/4 of the audio
         } else {
             audioPlayer.pause();
             playPauseBtn.textContent = 'Play';
@@ -228,6 +240,24 @@
 
         type();  // Start typing
     }
+
+    // Detect light or dark mode and apply appropriate theme
+    function detectTheme() {
+        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            document.body.classList.remove('light-mode');
+        } else {
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode');
+        }
+    }
+
+    // Apply theme on load
+    detectTheme();
+
+    // Listen for changes in theme
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
 </script>
 
 </body>
