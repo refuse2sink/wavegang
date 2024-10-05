@@ -6,15 +6,16 @@
     <title>Wave Gang (International)</title>
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Georgia', serif; /* Changed to Georgia serif font */
             margin: 0;
             padding: 0;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* Changed to allow scrolling */
             height: 100vh;
             flex-direction: column;
             transition: background-color 0.3s, color 0.3s;
+            overflow-y: auto; /* Allow page scrolling */
         }
 
         /* Dark mode */
@@ -215,7 +216,7 @@
             setTimeout(() => {
                 lyrics.style.visibility = 'visible';
                 startTypingAnimation();
-            }, audioPlayer.duration * 0.20 * 1000); // Delay lyrics start after 1/4 of the audio
+            }, audioPlayer.duration * 0.2 * 1000); // Delay lyrics start after 1/4 of the audio
         } else {
             audioPlayer.pause();
             playPauseBtn.textContent = 'Play';
@@ -250,23 +251,12 @@
         type();  // Start typing
     }
 
-    // Detect light or dark mode and apply appropriate theme
-    function detectTheme() {
-        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-            document.body.classList.remove('light-mode');
-        } else {
-            document.body.classList.add('light-mode');
-            document.body.classList.remove('dark-mode');
-        }
-    }
+    // Detect light or dark mode and apply appropriate
 
-    // Apply theme on load
-    detectTheme();
+ class
+    const mode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark-mode' : 'light-mode';
+    document.body.classList.add(mode);
 
-    // Listen for changes in theme
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
 </script>
 
 </body>
