@@ -13,8 +13,8 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: white;
-            color: #fff;
+            background-color: #000; /* Black background */
+            color: #fff; /* White text */
             flex-direction: column;
         }
 
@@ -37,33 +37,43 @@
             font-size: 1.2rem;
         }
 
-        /* Style for the music player */
+        /* Music player styling */
         .player {
             margin-top: 20px;
             width: 300px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            color: #fff;
+            background-color: #333; /* Dark background */
+            padding: 10px;
+            border-radius: 10px;
         }
 
         .progress-container {
             width: 100%;
-            background: #333;
+            background: #555; /* Gray background for progress bar */
             border-radius: 5px;
             margin: 0 10px;
-            position: relative;
             height: 10px;
+            position: relative;
         }
 
         .progress-bar {
-            background: red;
+            background: red; /* Red accent for progress bar */
             width: 0%;
             height: 100%;
             border-radius: 5px;
             transition: width 0.2s ease-in;
         }
 
+        #play-pause {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* Bars animation */
         .bar-container {
             display: flex;
             gap: 5px;
@@ -84,6 +94,7 @@
             100% { transform: scaleY(0.2); }
         }
 
+        /* Lyrics styling */
         .lyrics {
             width: 80%;
             margin-top: 20px;
