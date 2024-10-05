@@ -32,6 +32,7 @@
         .wave-container {
             text-align: center;
             line-height: 1.5;
+            margin-top: 20px; /* Added margin above text */
         }
 
         .wave-container .wave {
@@ -58,6 +59,12 @@
             background-color: #333; /* Dark background for player */
             padding: 10px;
             border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        /* Lighter player background in light mode */
+        body.light-mode .player {
+            background-color: #ddd; /* Light gray for contrast in light mode */
         }
 
         .progress-container {
@@ -137,6 +144,8 @@
 <body>
 
 <div class="wave-container">
+    <!-- Added 3 <br> tags for spacing -->
+    <br><br><br>
     <div class="wave">(      )</div>
     <div class="wave">(            )</div>
     <h1>Wave Gang</h1>
@@ -243,7 +252,7 @@
 
     // Detect light or dark mode and apply appropriate theme
     function detectTheme() {
-        const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
         if (isDarkMode) {
             document.body.classList.add('dark-mode');
             document.body.classList.remove('light-mode');
