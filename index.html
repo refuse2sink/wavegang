@@ -12,7 +12,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             flex-direction: column;
             transition: background-color 0.3s, color 0.3s;
         }
@@ -125,14 +125,14 @@
         /* Typing animation for lyrics */
         .lyrics {
             width: 80%;
-            height: auto;
+            height: flex;
             margin-top: 20px;
             font-size: 1rem;
             text-align: center;
             white-space: pre-wrap;
             border-right: 2px solid;
             overflow: hidden; /* Hide the overflow until text is "typed" */
-            visibility: visible; /* Start hidden */
+            visibility: hidden; /* Start hidden */
             padding: 10px;
         }
 
