@@ -13,7 +13,8 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f0f8ff;
+            background-color: #000;
+            color: #fff;
             flex-direction: column;
         }
 
@@ -43,11 +44,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            color: #fff;
         }
 
         .progress-container {
             width: 100%;
-            background: #ddd;
+            background: #333;
             border-radius: 5px;
             margin: 0 10px;
             position: relative;
@@ -55,25 +57,40 @@
         }
 
         .progress-bar {
-            background: #1f8ef1;
+            background: red;
             width: 0%;
             height: 100%;
             border-radius: 5px;
             transition: width 0.2s ease-in;
         }
 
-        .fader {
-            width: 20px;
-            height: 10px;
-            background: #333;
-            border-radius: 3px;
-            animation: faderMove 2s infinite;
+        .bar-container {
+            display: flex;
+            gap: 5px;
+            margin-left: 10px;
         }
 
-        @keyframes faderMove {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0); }
+        .bar {
+            width: 10px;
+            height: 50px;
+            background-color: red;
+            transform-origin: bottom;
+            animation: none;
+        }
+
+        @keyframes barMove {
+            0% { transform: scaleY(0.2); }
+            50% { transform: scaleY(1); }
+            100% { transform: scaleY(0.2); }
+        }
+
+        .lyrics {
+            width: 80%;
+            margin-top: 20px;
+            font-size: 1rem;
+            text-align: center;
+            white-space: pre-wrap;
+            visibility: hidden;
         }
     </style>
 </head>
@@ -94,27 +111,82 @@
     <div class="progress-container">
         <div class="progress-bar" id="progress-bar"></div>
     </div>
-    <div class="fader"></div>
+    <div class="bar-container">
+        <div class="bar" id="bar1"></div>
+        <div class="bar" id="bar2"></div>
+        <div class="bar" id="bar3"></div>
+    </div>
 </div>
 
 <audio id="audio-player" src="https://raw.githubusercontent.com/refuse2sink/wavegang/main/waveganghymne.mp3"></audio>
+
+<!-- Song Lyrics -->
+<div class="lyrics" id="lyrics">
+    It feels so far<br>
+    I can't have it<br>
+    Reach up to the stars it got me feeling I could grab it<br>
+    I feel so wrong,<br>
+    I'm right passed it<br>
+    Put all of my feelings in a blunt then I ashed it<br>
+    You know I can stand this<br>
+    I'm losing my balance<br>
+    Running from myself is only giving me a callus<br>
+    Sticking to myself and I ain't worrying about it<br>
+    You ain't sticking to the code<br>
+    You put it in it's invalid.<br>
+    Crawling through the basement to make it to the attic<br>
+    I ain't worried bout the time I'm still gon shine without a Patek<br>
+    I just put my WTAPS on I'm moving tactic<br>
+    They can push me to the side, I know I'm still your main attraction<br>
+    All the way down to the atoms I know it don't really matter<br>
+    I'm just tryna stay afloat without a paddle<br>
+    I been so damn high I can't come down without a ladder<br>
+    They gon keep on talking<br>
+    I lose signal through the chatter<br>
+    My mind keep on racing like a horse so where the lasso<br>
+    This place is filled with animals it feel like Camp Lazlo<br>
+    I thought you were my Cassie got me feeling like a asshole<br>
+    Now I swim in my emotion<br>
+    In my feelings doin back strokes
+</div>
 
 <script>
     const audioPlayer = document.getElementById('audio-player');
     const playPauseBtn = document.getElementById('play-pause');
     const progressBar = document.getElementById('progress-bar');
+    const lyrics = document.getElementById('lyrics');
+    const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
 
     let isPlaying = false;
+    let lyricsTimer;
+
+    // Function to animate bars
+    function startBarAnimation() {
+        bars.forEach((bar) => {
+            bar.style.animation = `barMove ${Math.random() * 0.7 + 0.3}s infinite`;
+        });
+    }
+
+    function stopBarAnimation() {
+        bars.forEach((bar) => {
+            bar.style.animation = 'none';
+        });
+    }
 
     playPauseBtn.addEventListener('click', function() {
         if (!isPlaying) {
             audioPlayer.play();
             playPauseBtn.textContent = 'Pause';
             isPlaying = true;
+            startBarAnimation();
+            lyrics.style.visibility = 'visible';
+            displayLyrics();
         } else {
             audioPlayer.pause();
             playPauseBtn.textContent = 'Play';
             isPlaying = false;
+            stopBarAnimation();
+            clearInterval(lyricsTimer);
         }
     });
 
@@ -123,6 +195,22 @@
         const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
         progressBar.style.width = progress + '%';
     });
+
+    // Function to display the lyrics progressively
+    function displayLyrics() {
+        const lyricsText = lyrics.innerHTML.split("<br>");
+        lyrics.innerHTML = '';  // Clear the lyrics container
+        let lineIndex = 0;
+
+        lyricsTimer = setInterval(() => {
+            if (lineIndex < lyricsText.length) {
+                lyrics.innerHTML += lyricsText[lineIndex] + "<br>";
+                lineIndex++;
+            } else {
+                clearInterval(lyricsTimer);
+            }
+        }, audioPlayer.duration * 1000 / lyricsText.length);  // Time for each line based on audio duration
+    }
 </script>
 
 </body>
