@@ -94,14 +94,27 @@
             100% { transform: scaleY(0.2); }
         }
 
-        /* Lyrics styling */
+        /* Typing animation for lyrics */
         .lyrics {
             width: 80%;
             margin-top: 20px;
             font-size: 1rem;
             text-align: center;
             white-space: pre-wrap;
-            visibility: hidden;
+            border-right: 2px solid;
+            overflow: hidden; /* Hide the overflow until text is "typed" */
+            visibility: hidden; /* Start hidden */
+        }
+
+        /* Typing effect keyframes */
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: white; }
         }
     </style>
 </head>
@@ -191,13 +204,13 @@
             isPlaying = true;
             startBarAnimation();
             lyrics.style.visibility = 'visible';
-            displayLyrics();
+            startTypingAnimation();
         } else {
             audioPlayer.pause();
             playPauseBtn.textContent = 'Play';
             isPlaying = false;
             stopBarAnimation();
-            clearInterval(lyricsTimer);
+            clearTimeout(lyricsTimer);
         }
     });
 
@@ -207,20 +220,23 @@
         progressBar.style.width = progress + '%';
     });
 
-    // Function to display the lyrics progressively
-    function displayLyrics() {
-        const lyricsText = lyrics.innerHTML.split("<br>");
+    // Function to display lyrics with typing animation
+    function startTypingAnimation() {
+        const totalDuration = audioPlayer.duration * 1000; // Total duration of audio in ms
+        const lyricsText = lyrics.innerHTML;  // Grab the full lyrics text
         lyrics.innerHTML = '';  // Clear the lyrics container
-        let lineIndex = 0;
+        let currentIndex = 0;
 
-        lyricsTimer = setInterval(() => {
-            if (lineIndex < lyricsText.length) {
-                lyrics.innerHTML += lyricsText[lineIndex] + "<br>";
-                lineIndex++;
-            } else {
-                clearInterval(lyricsTimer);
+        function type() {
+            if (currentIndex < lyricsText.length) {
+                lyrics.innerHTML += lyricsText.charAt(currentIndex);  // Add one character at a time
+                currentIndex++;
+                const typingSpeed = totalDuration / lyricsText.length;  // Spread typing across song duration
+                lyricsTimer = setTimeout(type, typingSpeed);  // Call type recursively
             }
-        }, audioPlayer.duration * 1000 / lyricsText.length);  // Time for each line based on audio duration
+        }
+
+        type();  // Start typing
     }
 </script>
 
