@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Wave Gang (International)</title>
-<link href="https://fonts.googleapis.com/css2?family=Crimson+Text&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22><text y=%2216%22 font-size=%2216%22>💢</text></svg>">
-<style>
+    <title>Wave Gang (International)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg">
+    <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -46,6 +46,9 @@
             font-size: 3rem;
             margin: 0.5rem 0;
             font-family: 'Crimson Text', serif; /* Crimson Text font for Wavegang */
+            font-style: normal;
+            cursor: pointer;
+            position: relative;
         }
 
         .wave-container .subtitle {
@@ -141,16 +144,66 @@
             from { width: 0; }
             to { width: 100%; }
         }
+
+        /* Overlay styles */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .overlay-content {
+            width: 200px;
+            height: 200px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
+            background-size: cover;
+            box-shadow: 0 0 20px white;
+            opacity: 0.96;
+        }
+
+        /* Fixed rotating Burberry pattern */
+        .fixed-pattern {
+            position: fixed;
+            top: 400px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 200px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
+            background-size: cover;
+            opacity: 0.96;
+            box-shadow: 0 0 20px white;
+            z-index: -1;
+        }
+
+        /* Animation for rotating pattern */
+        .rotating {
+            animation: rotatePattern 4s infinite linear;
+        }
+
+        @keyframes rotatePattern {
+            from {
+                transform: translateX(-50%) rotate(0deg);
+            }
+            to {
+                transform: translateX(-50%) rotate(360deg);
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="wave-container">
-    <!-- Added 3 <br> tags for spacing -->
     <br><br><br>
     <div class="wave">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
     <div class="wave">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
-    <h1>WAVEGANG</h1>
+    <h1 id="wavegang-title">WAVEGANG</h1>
     <div class="wave">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
     <div class="wave">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
     <p class="subtitle">(International)</p>
@@ -185,7 +238,30 @@
     <p>I thought you were my Cassie got me feeling like a asshole Now I swim in my emotion In my feelings doin back strokes</p>
 </div>
 
+<!-- Overlay element -->
+<div id="overlay" class="overlay">
+    <div class="overlay-content"></div>
+</div>
+
+<!-- Fixed rotating pattern -->
+<div class="fixed-pattern rotating"></div>
+
 <script>
+    const wavegangTitle = document.getElementById('wavegang-title');
+    const overlay = document.getElementById('overlay');
+
+    // Show overlay when clicking on the h1
+    wavegangTitle.addEventListener('click', function() {
+        overlay.style.display = 'flex';
+    });
+
+    // Hide overlay when clicking outside the content
+    overlay.addEventListener('click', function(event) {
+        if (event.target === overlay) {
+            overlay.style.display = 'none';
+        }
+    });
+
     const audioPlayer = document.getElementById('audio-player');
     const playPauseBtn = document.getElementById('play-pause');
     const progressBar = document.getElementById('progress-bar');
@@ -273,4 +349,3 @@
 
 </body>
 </html>
-
