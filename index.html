@@ -145,56 +145,39 @@
             to { width: 100%; }
         }
 
-        /* Overlay styles */
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
+/* Overlay styles */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
 
-        .overlay-content {
-            width: 200px;
-            height: 200px;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
-            background-size: cover;
-            box-shadow: 0 0 20px white;
-            opacity: 0.96;
-        }
+.overlay-content {
+    width: 200px;
+    height: 200px;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
+    background-size: cover;
+    box-shadow: 0 0 20px white;
+    opacity: 0.96;
+    transition: transform 0.3s ease-in-out;
+}
 
-        /* Fixed rotating Burberry pattern */
-        .fixed-pattern {
-            position: fixed;
-            top: 400px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 200px;
-            height: 200px;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
-            background-size: cover;
-            opacity: 0.96;
-            box-shadow: 0 0 20px white;
-            z-index: -1;
-        }
+/* Rotating on scroll */
+.rotating {
+    transform: rotate(0deg);
+    transition: transform 0.3s linear;
+}
 
-        /* Animation for rotating pattern */
-        .rotating {
-            animation: rotatePattern 4s infinite linear;
-        }
-
-        @keyframes rotatePattern {
-            from {
-                transform: translateX(-50%) rotate(0deg);
-            }
-            to {
-                transform: translateX(-50%) rotate(360deg);
-            }
-        }
+/* Dimming effect */
+.dimmed {
+    opacity: 0.5;
+}
     </style>
 </head>
 <body>
@@ -243,109 +226,117 @@
     <div class="overlay-content"></div>
 </div>
 
-<!-- Fixed rotating pattern -->
-<div class="fixed-pattern rotating"></div>
-
 <script>
-    const wavegangTitle = document.getElementById('wavegang-title');
-    const overlay = document.getElementById('overlay');
+const wavegangTitle = document.getElementById('wavegang-title');
+const overlay = document.getElementById('overlay');
+const overlayContent = document.querySelector('.overlay-content');
 
-    // Show overlay when clicking on the h1
-    wavegangTitle.addEventListener('click', function() {
-        overlay.style.display = 'flex';
+const audioPlayer = document.getElementById('audio-player');
+const playPauseBtn = document.getElementById('play-pause');
+const progressBar = document.getElementById('progress-bar');
+const lyrics = document.getElementById('lyrics');
+const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
+
+let isPlaying = false;
+let lyricsTimer;
+let isRotating = false;
+
+// Function to animate bars
+function startBarAnimation() {
+    bars.forEach((bar) => {
+        bar.style.animation = `barMove ${Math.random() * 0.7 + 0.3}s infinite`;
     });
+}
 
-    // Hide overlay when clicking outside the content
-    overlay.addEventListener('click', function(event) {
-        if (event.target === overlay) {
-            overlay.style.display = 'none';
-        }
+function stopBarAnimation() {
+    bars.forEach((bar) => {
+        bar.style.animation = 'none';
     });
+}
 
-    const audioPlayer = document.getElementById('audio-player');
-    const playPauseBtn = document.getElementById('play-pause');
-    const progressBar = document.getElementById('progress-bar');
-    const lyrics = document.getElementById('lyrics');
-    const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
-
-    let isPlaying = false;
-    let lyricsTimer;
-
-    // Function to animate bars
-    function startBarAnimation() {
-        bars.forEach((bar) => {
-            bar.style.animation = `barMove ${Math.random() * 0.7 + 0.3}s infinite`;
-        });
+// Play/pause functionality for the audio player
+playPauseBtn.addEventListener('click', function() {
+    if (!isPlaying) {
+        audioPlayer.play();
+        playPauseBtn.textContent = 'Pause';
+        isPlaying = true;
+        startBarAnimation();
+        setTimeout(() => {
+            lyrics.style.visibility = 'visible';
+            startTypingAnimation();
+        }, audioPlayer.duration * 0.20 * 1000); // Delay lyrics start after 1/4 of the audio
+    } else {
+        audioPlayer.pause();
+        playPauseBtn.textContent = 'Play';
+        isPlaying = false;
+        stopBarAnimation();
+        clearTimeout(lyricsTimer);
     }
+});
 
-    function stopBarAnimation() {
-        bars.forEach((bar) => {
-            bar.style.animation = 'none';
-        });
-    }
+// Update progress bar as the music plays
+audioPlayer.addEventListener('timeupdate', function() {
+    const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+    progressBar.style.width = progress + '%';
+});
 
-    playPauseBtn.addEventListener('click', function() {
-        if (!isPlaying) {
-            audioPlayer.play();
-            playPauseBtn.textContent = 'Pause';
-            isPlaying = true;
-            startBarAnimation();
-            setTimeout(() => {
-                lyrics.style.visibility = 'visible';
-                startTypingAnimation();
-            }, audioPlayer.duration * 0.20 * 1000); // Delay lyrics start after 1/4 of the audio
-        } else {
-            audioPlayer.pause();
-            playPauseBtn.textContent = 'Play';
-            isPlaying = false;
-            stopBarAnimation();
-            clearTimeout(lyricsTimer);
-        }
-    });
+// Function to display lyrics with typing animation
+function startTypingAnimation() {
+    const totalDuration = audioPlayer.duration * 1000; // Total duration of audio in ms
+    const lyricsText = lyrics.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, ' ');  // Remove paragraph tags for cleaner typing
+    lyrics.innerHTML = '';  // Clear the lyrics container
+    let currentIndex = 0;
 
-    // Update progress bar as the music plays
-    audioPlayer.addEventListener('timeupdate', function() {
-        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-        progressBar.style.width = progress + '%';
-    });
-
-    // Function to display lyrics with typing animation
-    function startTypingAnimation() {
-        const totalDuration = audioPlayer.duration * 1000; // Total duration of audio in ms
-        const lyricsText = lyrics.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, ' ');  // Remove paragraph tags for cleaner typing
-        lyrics.innerHTML = '';  // Clear the lyrics container
-        let currentIndex = 0;
-
-        function type() {
-            if (currentIndex < lyricsText.length) {
-                lyrics.innerHTML += lyricsText.charAt(currentIndex);  // Add one character at a time
-                currentIndex++;
-                const typingSpeed = (totalDuration - (totalDuration * 0.25)) / lyricsText.length;  // Adjust typing duration
-                lyricsTimer = setTimeout(type, typingSpeed);  // Call type recursively
-            }
-        }
-
-        type();  // Start typing
-    }
-
-    // Detect light or dark mode and apply appropriate theme
-    function detectTheme() {
-        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-            document.body.classList.remove('light-mode');
-        } else {
-            document.body.classList.add('light-mode');
-            document.body.classList.remove('dark-mode');
+    function type() {
+        if (currentIndex < lyricsText.length) {
+            lyrics.innerHTML += lyricsText.charAt(currentIndex);  // Add one character at a time
+            currentIndex++;
+            const typingSpeed = (totalDuration - (totalDuration * 0.25)) / lyricsText.length;  // Adjust typing duration
+            lyricsTimer = setTimeout(type, typingSpeed);  // Call type recursively
         }
     }
 
-    // Apply theme on load
-    detectTheme();
+    type();  // Start typing
+}
 
-    // Listen for changes in theme
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
-</script>
+// Detect light or dark mode and apply appropriate theme
+function detectTheme() {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        document.body.classList.remove('light-mode');
+    } else {
+        document.body.classList.add('light-mode');
+        document.body.classList.remove('dark-mode');
+    }
+}
 
+// Apply theme on load
+detectTheme();
+
+// Listen for changes in theme
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
+
+// Show overlay when clicking on the h1
+wavegangTitle.addEventListener('click', function() {
+    overlay.style.display = 'flex';
+    isRotating = true;
+});
+
+// Hide overlay when clicking outside the content
+overlay.addEventListener('click', function(event) {
+    if (event.target === overlay) {
+        overlay.style.display = 'none';
+        isRotating = false;
+    }
+});
+
+// Rotate pattern on scroll
+window.addEventListener('scroll', function() {
+    if (isRotating) {
+        let scrollPos = window.scrollY;
+        overlayContent.style.transform = `rotate(${scrollPos}deg)`;
+    }
+});
 </body>
 </html>
