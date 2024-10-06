@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wave Gang (International)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Text&family=Cormorant&display=swap" rel="stylesheet">
-    <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg">
-    <style>
+<title>Wave Gang (International)</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Text&display=swap" rel="stylesheet">
+<link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg">
+<style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 0;
@@ -45,7 +45,7 @@
         .wave-container h1 {
             font-size: 3rem;
             margin: 0.5rem 0;
-            font-family: 'Cormorant', serif; /* Cormorant font for Wavegang */
+            font-family: 'Cormorant', serif; 
         }
 
         .wave-container .subtitle {
@@ -141,27 +141,6 @@
             from { width: 0; }
             to { width: 100%; }
         }
-
-        /* Overlay styling */
-        .overlay {
-            position: fixed;
-            top: 200px; /* 200px from the top */
-            width:200px;
-            height:200px;
-            left: 50%;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
-            background-size: cover;
-            background-position: center;
-            opacity: 0;
-            pointer-events: none; /* Prevent interaction when hidden */
-            transition: opacity 0.3s ease;
-            z-index: 10; /* Ensure overlay is above other elements */
-        }
-
-        .overlay.visible {
-            opacity: 0.9;
-            pointer-events: auto; /* Allow interaction when visible */
-        }
     </style>
 </head>
 <body>
@@ -206,17 +185,12 @@
     <p>I thought you were my Cassie got me feeling like a asshole Now I swim in my emotion In my feelings doin back strokes</p>
 </div>
 
-<!-- Overlay element -->
-<div class="overlay" id="overlay"></div>
-
 <script>
     const audioPlayer = document.getElementById('audio-player');
     const playPauseBtn = document.getElementById('play-pause');
     const progressBar = document.getElementById('progress-bar');
     const lyrics = document.getElementById('lyrics');
     const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
-    const overlay = document.getElementById('overlay');
-    const wavegangHeading = document.querySelector('h1');
 
     let isPlaying = false;
     let lyricsTimer;
@@ -224,7 +198,7 @@
     // Function to animate bars
     function startBarAnimation() {
         bars.forEach((bar) => {
-            bar.style.animation = 'barMove 0.5s infinite alternate';
+            bar.style.animation = `barMove ${Math.random() * 0.7 + 0.3}s infinite`;
         });
     }
 
@@ -234,66 +208,67 @@
         });
     }
 
-    playPauseBtn.addEventListener('click', () => {
-        if (isPlaying) {
-            audioPlayer.pause();
-            playPauseBtn.textContent = 'Play';
-            stopBarAnimation();
-            clearInterval(lyricsTimer);
-            lyrics.style.visibility = 'hidden'; // Hide lyrics
-        } else {
+    playPauseBtn.addEventListener('click', function() {
+        if (!isPlaying) {
             audioPlayer.play();
             playPauseBtn.textContent = 'Pause';
+            isPlaying = true;
             startBarAnimation();
-            showLyrics();
+            setTimeout(() => {
+                lyrics.style.visibility = 'visible';
+                startTypingAnimation();
+            }, audioPlayer.duration * 0.20 * 1000); // Delay lyrics start after 1/4 of the audio
+        } else {
+            audioPlayer.pause();
+            playPauseBtn.textContent = 'Play';
+            isPlaying = false;
+            stopBarAnimation();
+            clearTimeout(lyricsTimer);
         }
-        isPlaying = !isPlaying;
     });
 
-    audioPlayer.addEventListener('timeupdate', () => {
+    // Update progress bar as the music plays
+    audioPlayer.addEventListener('timeupdate', function() {
         const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
         progressBar.style.width = progress + '%';
     });
 
-    function showLyrics() {
-        const lyricLines = lyrics.querySelectorAll('p');
-        let lineIndex = 0;
-        lyrics.style.visibility = 'visible'; // Show lyrics
-        lyrics.innerHTML = ''; // Clear previous lyrics
+    // Function to display lyrics with typing animation
+    function startTypingAnimation() {
+        const totalDuration = audioPlayer.duration * 1000; // Total duration of audio in ms
+        const lyricsText = lyrics.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, ' ');  // Remove paragraph tags for cleaner typing
+        lyrics.innerHTML = '';  // Clear the lyrics container
+        let currentIndex = 0;
 
-        lyricsTimer = setInterval(() => {
-            if (lineIndex < lyricLines.length) {
-                lyrics.appendChild(lyricLines[lineIndex]);
-                lineIndex++;
-            } else {
-                clearInterval(lyricsTimer);
+        function type() {
+            if (currentIndex < lyricsText.length) {
+                lyrics.innerHTML += lyricsText.charAt(currentIndex);  // Add one character at a time
+                currentIndex++;
+                const typingSpeed = (totalDuration - (totalDuration * 0.25)) / lyricsText.length;  // Adjust typing duration
+                lyricsTimer = setTimeout(type, typingSpeed);  // Call type recursively
             }
-        }, 3000); // Display each line for 3 seconds
+        }
+
+        type();  // Start typing
     }
 
-    // Function to handle the overlay behavior
-    function handleOverlay() {
-        overlay.classList.toggle('visible');
-        overlay.style.transform = `rotate(${overlay.classList.contains('visible') ? '0deg' : '180deg'})`;
+    // Detect light or dark mode and apply appropriate theme
+    function detectTheme() {
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            document.body.classList.remove('light-mode');
+        } else {
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode');
+        }
     }
 
-    // Event listener for clicking on the Wavegang text
-    wavegangHeading.addEventListener('click', handleOverlay);
+    // Apply theme on load
+    detectTheme();
 
-    // Close overlay when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!overlay.contains(event.target) && !wavegangHeading.contains(event.target)) {
-            overlay.classList.remove('visible');
-        }
-    });
-
-    // Rotate overlay on scroll
-    window.addEventListener('scroll', () => {
-        if (overlay.classList.contains('visible')) {
-            overlay.style.transform = `rotate(${window.scrollY}deg)`;
-        }
-    });
-
+    // Listen for changes in theme
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
 </script>
 
 </body>
