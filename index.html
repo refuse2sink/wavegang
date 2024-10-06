@@ -165,7 +165,7 @@
     <div class="bar-container">
         <div class="bar" id="bar1"></div>
         <div class="bar" id="bar2"></div>
-        <div class="bar" id="bar3"></div>
+        <div the="bar3"></div>
     </div>
 </div>
 
@@ -184,6 +184,7 @@
     <p>My mind keep on racing like a horse so where the lasso This place is filled with animals it feel like Camp Lazlo</p>
     <p>I thought you were my Cassie got me feeling like a asshole Now I swim in my emotion In my feelings doin back strokes</p>
 </div>
+
 
 <script>
     const audioPlayer = document.getElementById('audio-player');
@@ -236,37 +237,39 @@
     // Function to display lyrics with typing animation
     function startTypingAnimation() {
         const totalDuration = audioPlayer.duration * 1000; // Total duration of audio in ms
-        const lyricsText = lyrics.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, ''); // Remove <p> tags for typing effect
-        let index = 0;
-        lyrics.style.borderRight = '2px solid'; // Show typing cursor
+        const lyricsText = lyrics.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, ' ');  // Remove paragraph tags for cleaner typing
+        lyrics.innerHTML = '';  // Clear the lyrics container
+        let currentIndex = 0;
 
         function type() {
-            if (index < lyricsText.length) {
-                lyrics.innerHTML = lyricsText.substring(0, index + 1);
-                index++;
-                lyricsTimer = setTimeout(type, totalDuration / lyricsText.length); // Set typing speed based on audio duration
-            } else {
-                lyrics.style.borderRight = 'none'; // Remove typing cursor at the end
+            if (currentIndex < lyricsText.length) {
+                lyrics.innerHTML += lyricsText.charAt(currentIndex);  // Add one character at a time
+                currentIndex++;
+                const typingSpeed = (totalDuration - (totalDuration * 0.25)) / lyricsText.length;  // Adjust typing duration
+                lyricsTimer = setTimeout(type, typingSpeed);  // Call type recursively
             }
         }
 
-        type();
+        type();  // Start typing
     }
 
-    // Apply dark or light mode based on time of day
-    function applyTheme() {
-        const hour = new Date().getHours();
-        if (hour >= 7 && hour < 19) {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-        } else {
-            document.body.classList.remove('light-mode');
+    // Detect light or dark mode and apply appropriate theme
+    function detectTheme() {
+        const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (isDarkMode) {
             document.body.classList.add('dark-mode');
+            document.body.classList.remove('light-mode');
+        } else {
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode');
         }
     }
 
-    applyTheme(); // Initial theme application
+    // Apply theme on load
+    detectTheme();
 
+    // Listen for changes in theme
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
 </script>
 </body>
 </html>
