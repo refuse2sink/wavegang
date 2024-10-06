@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wave Gang (International)</title>
-    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Text&family=Cormorant&display=swap" rel="stylesheet">
     <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg">
     <style>
         body {
@@ -45,10 +45,7 @@
         .wave-container h1 {
             font-size: 3rem;
             margin: 0.5rem 0;
-            font-family: 'Crimson Text', serif; /* Crimson Text font for Wavegang */
-            font-style: normal;
-            cursor: pointer;
-            position: relative;
+            font-family: 'Cormorant', serif; /* Cormorant font for Wavegang */
         }
 
         .wave-container .subtitle {
@@ -145,48 +142,36 @@
             to { width: 100%; }
         }
 
-/* Overlay styles */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-}
+        /* Overlay styling */
+        .overlay {
+            position: fixed;
+            top: 200px; /* 200px from the top */
+            left: 0;
+            right: 0;
+            height: calc(100vh - 200px);
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            pointer-events: none; /* Prevent interaction when hidden */
+            transition: opacity 0.3s ease;
+            z-index: 10; /* Ensure overlay is above other elements */
+        }
 
-.overlay-content {
-    width: 200px;
-    height: 200px;
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
-    background-size: cover;
-    box-shadow: 0 0 20px white;
-    opacity: 0.96;
-    transition: transform 0.3s ease-in-out;
-}
-
-/* Rotating on scroll */
-.rotating {
-    transform: rotate(0deg);
-    transition: transform 0.3s linear;
-}
-
-/* Dimming effect */
-.dimmed {
-    opacity: 0.5;
-}
+        .overlay.visible {
+            opacity: 1;
+            pointer-events: auto; /* Allow interaction when visible */
+        }
     </style>
 </head>
 <body>
 
 <div class="wave-container">
+    <!-- Added 3 <br> tags for spacing -->
     <br><br><br>
     <div class="wave">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
     <div class="wave">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
-    <h1 id="wavegang-title">WAVEGANG</h1>
+    <h1>WAVEGANG</h1>
     <div class="wave">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
     <div class="wave">( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )</div>
     <p class="subtitle">(International)</p>
@@ -222,121 +207,94 @@
 </div>
 
 <!-- Overlay element -->
-<div id="overlay" class="overlay">
-    <div class="overlay-content"></div>
-</div>
+<div class="overlay" id="overlay"></div>
 
 <script>
-const wavegangTitle = document.getElementById('wavegang-title');
-const overlay = document.getElementById('overlay');
-const overlayContent = document.querySelector('.overlay-content');
+    const audioPlayer = document.getElementById('audio-player');
+    const playPauseBtn = document.getElementById('play-pause');
+    const progressBar = document.getElementById('progress-bar');
+    const lyrics = document.getElementById('lyrics');
+    const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
+    const overlay = document.getElementById('overlay');
+    const wavegangHeading = document.querySelector('h1');
 
-const audioPlayer = document.getElementById('audio-player');
-const playPauseBtn = document.getElementById('play-pause');
-const progressBar = document.getElementById('progress-bar');
-const lyrics = document.getElementById('lyrics');
-const bars = [document.getElementById('bar1'), document.getElementById('bar2'), document.getElementById('bar3')];
+    let isPlaying = false;
+    let lyricsTimer;
 
-let isPlaying = false;
-let lyricsTimer;
-let isRotating = false;
-
-// Function to animate bars
-function startBarAnimation() {
-    bars.forEach((bar) => {
-        bar.style.animation = `barMove ${Math.random() * 0.7 + 0.3}s infinite`;
-    });
-}
-
-function stopBarAnimation() {
-    bars.forEach((bar) => {
-        bar.style.animation = 'none';
-    });
-}
-
-// Play/pause functionality for the audio player
-playPauseBtn.addEventListener('click', function() {
-    if (!isPlaying) {
-        audioPlayer.play();
-        playPauseBtn.textContent = 'Pause';
-        isPlaying = true;
-        startBarAnimation();
-        setTimeout(() => {
-            lyrics.style.visibility = 'visible';
-            startTypingAnimation();
-        }, audioPlayer.duration * 0.20 * 1000); // Delay lyrics start after 1/4 of the audio
-    } else {
-        audioPlayer.pause();
-        playPauseBtn.textContent = 'Play';
-        isPlaying = false;
-        stopBarAnimation();
-        clearTimeout(lyricsTimer);
+    // Function to animate bars
+    function startBarAnimation() {
+        bars.forEach((bar) => {
+            bar.style.animation = 'barMove 0.5s infinite alternate';
+        });
     }
-});
 
-// Update progress bar as the music plays
-audioPlayer.addEventListener('timeupdate', function() {
-    const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
-    progressBar.style.width = progress + '%';
-});
+    function stopBarAnimation() {
+        bars.forEach((bar) => {
+            bar.style.animation = 'none';
+        });
+    }
 
-// Function to display lyrics with typing animation
-function startTypingAnimation() {
-    const totalDuration = audioPlayer.duration * 1000; // Total duration of audio in ms
-    const lyricsText = lyrics.innerHTML.replace(/<p>/g, '').replace(/<\/p>/g, ' ');  // Remove paragraph tags for cleaner typing
-    lyrics.innerHTML = '';  // Clear the lyrics container
-    let currentIndex = 0;
-
-    function type() {
-        if (currentIndex < lyricsText.length) {
-            lyrics.innerHTML += lyricsText.charAt(currentIndex);  // Add one character at a time
-            currentIndex++;
-            const typingSpeed = (totalDuration - (totalDuration * 0.25)) / lyricsText.length;  // Adjust typing duration
-            lyricsTimer = setTimeout(type, typingSpeed);  // Call type recursively
+    playPauseBtn.addEventListener('click', () => {
+        if (isPlaying) {
+            audioPlayer.pause();
+            playPauseBtn.textContent = 'Play';
+            stopBarAnimation();
+            clearInterval(lyricsTimer);
+            lyrics.style.visibility = 'hidden'; // Hide lyrics
+        } else {
+            audioPlayer.play();
+            playPauseBtn.textContent = 'Pause';
+            startBarAnimation();
+            showLyrics();
         }
+        isPlaying = !isPlaying;
+    });
+
+    audioPlayer.addEventListener('timeupdate', () => {
+        const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+        progressBar.style.width = progress + '%';
+    });
+
+    function showLyrics() {
+        const lyricLines = lyrics.querySelectorAll('p');
+        let lineIndex = 0;
+        lyrics.style.visibility = 'visible'; // Show lyrics
+        lyrics.innerHTML = ''; // Clear previous lyrics
+
+        lyricsTimer = setInterval(() => {
+            if (lineIndex < lyricLines.length) {
+                lyrics.appendChild(lyricLines[lineIndex]);
+                lineIndex++;
+            } else {
+                clearInterval(lyricsTimer);
+            }
+        }, 3000); // Display each line for 3 seconds
     }
 
-    type();  // Start typing
-}
-
-// Detect light or dark mode and apply appropriate theme
-function detectTheme() {
-    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    if (isDarkMode) {
-        document.body.classList.add('dark-mode');
-        document.body.classList.remove('light-mode');
-    } else {
-        document.body.classList.add('light-mode');
-        document.body.classList.remove('dark-mode');
+    // Function to handle the overlay behavior
+    function handleOverlay() {
+        overlay.classList.toggle('visible');
+        overlay.style.transform = `rotate(${overlay.classList.contains('visible') ? '0deg' : '180deg'})`;
     }
-}
 
-// Apply theme on load
-detectTheme();
+    // Event listener for clicking on the Wavegang text
+    wavegangHeading.addEventListener('click', handleOverlay);
 
-// Listen for changes in theme
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', detectTheme);
+    // Close overlay when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!overlay.contains(event.target) && !wavegangHeading.contains(event.target)) {
+            overlay.classList.remove('visible');
+        }
+    });
 
-// Show overlay when clicking on the h1
-wavegangTitle.addEventListener('click', function() {
-    overlay.style.display = 'flex';
-    isRotating = true;
-});
+    // Rotate overlay on scroll
+    window.addEventListener('scroll', () => {
+        if (overlay.classList.contains('visible')) {
+            overlay.style.transform = `rotate(${window.scrollY}deg)`;
+        }
+    });
 
-// Hide overlay when clicking outside the content
-overlay.addEventListener('click', function(event) {
-    if (event.target === overlay) {
-        overlay.style.display = 'none';
-        isRotating = false;
-    }
-});
+</script>
 
-// Rotate pattern on scroll
-window.addEventListener('scroll', function() {
-    if (isRotating) {
-        let scrollPos = window.scrollY;
-        overlayContent.style.transform = `rotate(${scrollPos}deg)`;
-    }
-});
 </body>
 </html>
