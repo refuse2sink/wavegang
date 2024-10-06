@@ -146,9 +146,9 @@
         .overlay {
             position: fixed;
             top: 200px; /* 200px from the top */
-            left: 0;
-            right: 0;
-            height: calc(100vh - 200px);
+            width:200px;
+            height:200px;
+            left: 50%;
             background-image: url('https://upload.wikimedia.org/wikipedia/commons/c/c1/Burberry_pattern.svg');
             background-size: cover;
             background-position: center;
@@ -159,7 +159,7 @@
         }
 
         .overlay.visible {
-            opacity: 1;
+            opacity: 0.9;
             pointer-events: auto; /* Allow interaction when visible */
         }
     </style>
